@@ -15,24 +15,23 @@ app.post('/chat', async (req, res) => {
   }
 
   try {
-    const aiResponse = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model: 'gpt-3.5-turbo',
-        messages: [
-          { role: 'system', content: "You are a Twitch chatbot." },
-          { role: 'user', content: userMsg }
-        ],
-        max_tokens: 60,
-        temperature: 0.7,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${OPENAI_KEY}`,
-        },
-      }
-    );
+const aiResponse = await axios.post(
+  'https://api.openai.com/v1/chat/completions',
+  {
+    model: 'gpt-3.5-turbo',
+    messages: [
+      { role: 'system', content: 'You are a sassy but helpful Twitch chatbot. Reply like you are in Twitch chat.' },
+      { role: 'user', content: userMsg }
+    ]
+  },
+  {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${OPENAI_KEY}`,
+    },
+  }
+);
+
 
     const reply = aiResponse.data.choices[0].message.content.trim();
     res.send(reply);
