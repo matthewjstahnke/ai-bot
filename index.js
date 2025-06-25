@@ -1,0 +1,44 @@
+const express = require('express');
+const axios = require('axios');
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+const OPENAI_KEY = process.env.OPENAI_API_KEY;
+
+app.use(express.text());  // For plain text body from MixItUp
+
+app.post('/chat', async (req, res) => {
+  const userMsg = req.body;
+
+  if (!userMsg) {
+    return res.status(400).send('No message provided.');
+  }
+
+  try {
+    const aiResponse = await axios.post(
+      'https://api.openai.com/v1/completions',
+      {
+        model: 'text-davinci-003',
+        prompt: `You are a Twitch chatbot. Respond to: "${userMsg}"`,
+        max_tokens: 60,
+        temperature: 0.7,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${OPENAI_KEY}`,
+        },
+      }
+    );
+
+    const reply = aiResponse.data.choices[0].text.trim();
+    res.send(reply);
+  } catch (error) {
+    console.error('OpenAI Error:', error.response?.data || error.message);
+    res.status(500).send('Error generating reply.');
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
