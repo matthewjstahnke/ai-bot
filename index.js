@@ -16,10 +16,13 @@ app.post('/chat', async (req, res) => {
 
   try {
     const aiResponse = await axios.post(
-      'https://api.openai.com/v1/completions',
+      'https://api.openai.com/v1/chat/completions',
       {
-        model: 'text-davinci-003',
-        prompt: `You are a Twitch chatbot. Respond to: "${userMsg}"`,
+        model: 'gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: "You are a Twitch chatbot." },
+          { role: 'user', content: userMsg }
+        ],
         max_tokens: 60,
         temperature: 0.7,
       },
@@ -31,7 +34,7 @@ app.post('/chat', async (req, res) => {
       }
     );
 
-    const reply = aiResponse.data.choices[0].text.trim();
+    const reply = aiResponse.data.choices[0].message.content.trim();
     res.send(reply);
   } catch (error) {
     console.error('OpenAI Error:', error.response?.data || error.message);
